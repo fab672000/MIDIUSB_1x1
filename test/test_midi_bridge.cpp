@@ -6,6 +6,7 @@
 #include "MIDIUSB.h"
 #include <vector>
 
+using namespace midi;
 _MIDIUSB MidiUSB;
 
 typedef std::vector<uint8_t> SysExBufferType;
