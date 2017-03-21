@@ -27,18 +27,18 @@ public:
     bool SendToSerial(const midiEventPacket_t& rx);
     bool SendToUSB();
 
-//! Given a midiusb  data buffer, create and return the corresonding serial midi
+  //! Given a midiusb  data buffer, create and return the corresponding serial midi
   //! contiguous buffer for sending to uart. Caller must delete[] the returned value when done.
   static  uint8_t* GetUsbToSerialSysExBuffer(const uint8_t *data, size_t size, size_t& outSize);
   
-  //! Given a serial midi data buffer, create and return the corresonding usb midi packets
+  //! Given a serial midi data buffer, create and return the corresponding usb midi packets
   //! for sending to USB connection. Caller must delete[] the returned value when done.
   static  uint8_t* GetSerialToUsbSysExBuffer(const uint8_t* data, size_t size, size_t& outSize);
   
-  //! Given a midiusb  data buffer, send the corresonding serial midi data to uart
+  //! Given a midiusb  data buffer, send the corresponding serial midi data to uart
   bool UsbToSerialSysEx(const uint8_t *data, size_t size);
   
-  //! Given a serial midi data buffer, send the corresonding serial midi data to USB
+  //! Given a serial midi data buffer, send the corresponding serial midi data to USB
   bool SerialToUsbSysEx(const uint8_t *data, size_t size);
 };
 
