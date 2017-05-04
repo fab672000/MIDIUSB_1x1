@@ -26,10 +26,13 @@
 
 USING_NAMESPACE_MIDI
 
+#define PANIC_BUTTON_PIN  2
+#include "Buttons.h"
+
 // WARNING on leonardo / Pro Micro serial is Serial1 !!, Serial is USB
 MIDIBRIDGE_CREATE_INSTANCE(HardwareSerial, Serial1,     midiA);
-
 #include "MidiUtils.h"
+
 
 //------------------------------------------------------------------------------
 static bool timer_elapsed = false;
@@ -43,6 +46,7 @@ void timer1_callback()
 //------------------------------------------------------------------------------
 void setup() 
 {
+  Buttons::Setup();
   Leds::Setup();
   Leds::AliveSignal(); // briefly blink leds as an alive signal
   
@@ -87,6 +91,13 @@ void loop()
   {
     Leds::AllLedsOff();
     timer_elapsed = false;
+  }
+
+  // put off all notes and reset controllers
+  if (Buttons::Pressed(PANIC_BUTTON_PIN)) 
+  {
+    MidiUtils::SendSerialOutPanic();
+    Buttons::WaitUntilReleased(PANIC_BUTTON_PIN);
   }
 }
 //------------------------------------------------------------------------------
