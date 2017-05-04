@@ -1,4 +1,3 @@
-#define ARDUINO_MAX_POWER_MA 20
 /*
  * MIDIUSB 1x1 interface, works with iPad.
  * 
@@ -18,11 +17,11 @@
  * THE SOFTWARE.
  */
 
-#include <avr/power.h>
 #include "TimerOne.h"
 #include "MIDIUSB.h"
 #include "MIDI.h"
 #include "MidiBridge.h"
+#include "Power.h"
 #include "Leds.h"
 
 USING_NAMESPACE_MIDI
@@ -35,16 +34,6 @@ MIDIBRIDGE_CREATE_INSTANCE(HardwareSerial, Serial1,     midiA);
 //------------------------------------------------------------------------------
 static bool timer_elapsed = false;
 //------------------------------------------------------------------------------
-void power_save()
-{ // Disable ADC, SPI, I2C, Timer 2 and Timer 3
-  power_adc_disable();
-  power_spi_disable();
-  power_twi_disable();
-
-  power_timer2_disable();
-  power_timer3_disable();
-}
-//------------------------------------------------------------------------------
 void timer1_callback()
 {
   timer_elapsed = true;
@@ -54,9 +43,7 @@ void timer1_callback()
 //------------------------------------------------------------------------------
 void setup() 
 {
-  pinMode(led1, OUTPUT);
-  pinMode(led2, OUTPUT);
-
+  Leds::Setup();
   Leds::AliveSignal(); // briefly blink leds as an alive signal
   
   midiA.begin(MIDI_CHANNEL_OMNI);
@@ -65,7 +52,7 @@ void setup()
   Timer1.initialize(500000); // initialize timer1, and set a period in us
   Timer1.attachInterrupt(timer1_callback);
 
-  power_save(); // save extra millamps by disabling what we do not use
+  Power::PowerSaveMode(); // save extra millamps by disabling what we do not use
 }
 //------------------------------------------------------------------------------
 // Main loop: Handle serial rx first and send it to host if any, 

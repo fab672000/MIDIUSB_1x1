@@ -40,6 +40,13 @@ const byte  led2 = TXLED1;
 class Leds
 {
  public:
+  
+  static void Setup()
+  {
+    pinMode(led1, OUTPUT);
+    pinMode(led2, OUTPUT);
+  }
+  
   static void Blink(byte led, int del=500)
   {
     digitalWrite(led, LED_ON);  
