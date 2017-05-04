@@ -9,7 +9,8 @@
 #include "MIDIUSB.h"
 #include <stdint.h>
 #include <stdio.h>
-#define MIDIBRIDGE_CREATE_INSTANCE(Type, SerialPort, Name)  MidiBridge<Type> Name((Type&)SerialPort);
+
+#define MIDIBRIDGE_CREATE_INSTANCE(Type, SerialPort, Name)  MidiBridge<Type> Name((Type&)SerialPort)
 
 namespace midi
 {

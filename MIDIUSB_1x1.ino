@@ -27,15 +27,13 @@
 
 USING_NAMESPACE_MIDI
 
-//------------------------------------------------------------------------------
-const byte   led1 = LED;
-const byte   led2 = TXLED1;
-
-static bool timer_elapsed = false;
-
 // WARNING on leonardo / Pro Micro serial is Serial1 !!, Serial is USB
 MIDIBRIDGE_CREATE_INSTANCE(HardwareSerial, Serial1,     midiA);
 
+#include "MidiUtils.h"
+
+//------------------------------------------------------------------------------
+static bool timer_elapsed = false;
 //------------------------------------------------------------------------------
 void power_save()
 { // Disable ADC, SPI, I2C, Timer 2 and Timer 3
@@ -47,29 +45,6 @@ void power_save()
   power_timer3_disable();
 }
 //------------------------------------------------------------------------------
-void leds_off()
-{
-  digitalWrite(led1, LED_OFF);
-  TXLED1;
-}
-//------------------------------------------------------------------------------
-void note(byte pitch, int duration=250)
-{
-  const uint8_t channel =1, velocity = 100;
-
-  midiEventPacket_t noteOn = {0x09, 0x90 | channel, pitch, velocity};
-  MidiUSB.sendMIDI(noteOn);
-  MidiUSB.flush();
-  //midiA.sendNoteOn(pitch, velocity, channel);
-
-  delay(duration);
-  midiEventPacket_t noteOff = {0x08, 0x80 | channel, pitch, velocity};
-  MidiUSB.sendMIDI(noteOff);
-  MidiUSB.flush();
-  //midiA.sendNoteOff(pitch, velocity, channel);
-
-}
-//------------------------------------------------------------------------------
 void timer1_callback()
 {
   timer_elapsed = true;
@@ -77,20 +52,12 @@ void timer1_callback()
 //------------------------------------------------------------------------------
 // Midi Interface Setup: initialize leds, serial midi, timer and power save 
 //------------------------------------------------------------------------------
-void setup() {
+void setup() 
+{
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
-  
-  // briefly blink leds as an alive signal
-  for (int i=0; i< 2; i++) {
-   delay(150);
-   digitalWrite(led1, LED_ON);
-   TXLED1;
-   delay(150);
-   digitalWrite(led1, LED_OFF);
-   TXLED0;
-  }
-  leds_off();
+
+  Leds::AliveSignal(); // briefly blink leds as an alive signal
   
   midiA.begin(MIDI_CHANNEL_OMNI);
   
@@ -104,14 +71,14 @@ void setup() {
 // Main loop: Handle serial rx first and send it to host if any, 
 //   then read host and send to serial if any.
 //------------------------------------------------------------------------------
-void loop() {
+void loop() 
+{
   bool sent = false, recv=false;
   
   // Handle serial midi messages, if any ; send them to host:
   while (midiA.read())
   {
       sent = midiA.SendToUSB();
-      // state = state==LED_OFF ? LED_ON : LED_OFF;
   }
   if(sent) {MidiUSB.flush();}
   
@@ -120,7 +87,7 @@ void loop() {
   do 
   {
     rx = MidiUSB.read();
-    midiA.SendToSerial(rx);
+    recv = midiA.SendToSerial(rx);
   } while (rx.header != 0);
 
   // Handle timer and leds to save power while no midi is received / sent
@@ -131,7 +98,7 @@ void loop() {
   }
   else if(timer_elapsed)
   {
-    leds_off();
+    Leds::AllLedsOff();
     timer_elapsed = false;
   }
 }

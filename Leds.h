@@ -34,17 +34,40 @@
 # define LED_ON  HIGH
 #endif  
 
-const int LED_DELAY_MS = 500;
+const byte  led1 = LED;
+const byte  led2 = TXLED1;
 
 class Leds
 {
  public:
-  static void blink(byte led, int del=LED_DELAY_MS)
+  static void Blink(byte led, int del=500)
   {
     digitalWrite(led, LED_ON);  
     delay(del);
     digitalWrite(led, LED_OFF); 
     delay(del);
+  }
+  
+  static void BlinkAlternateLeds( int del=150)
+  {
+     delay(150);
+     digitalWrite(led1, LED_ON);
+     TXLED1;
+     delay(150);
+     digitalWrite(led1, LED_OFF);
+     TXLED0;
+  }
+  
+  static void AllLedsOff()
+  {
+      digitalWrite(led1, LED_OFF);
+      TXLED1;
+  }
+
+  static void AliveSignal(int del = 150)
+  {
+    for (uint8_t i=0; i< 2; i++) BlinkAlternateLeds();
+    AllLedsOff();
   }
 };
 
