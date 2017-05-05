@@ -20,7 +20,7 @@ namespace midi
         digitalWrite(led1, LED_ON);
         TXLED1;
   
-        for (uint8_t channel = 0; channel<16; channel++)
+        for (uint8_t channel = 1; channel <= 16; channel++)
         {
           midiA.sendControlChange(AllSoundOff,          0,  channel);
           midiA.sendControlChange(ResetAllControllers,  0,  channel);
