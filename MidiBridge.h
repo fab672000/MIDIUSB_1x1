@@ -178,7 +178,13 @@ bool MidiBridge<SerialPort, Settings>::SendToUSB()
     }
     else
     {
-        midiEventPacket_t tx= {byte(msgType>>4), byte(msgType | this->getChannel()), this->getData1(), this->getData2()};
+        midiEventPacket_t tx= 
+        {
+        	byte(msgType>>4), 
+        	byte(msgType | ((this->getChannel()-1) & 0x0f), // getChannel() returns values from 1 to 16
+        	this->getData1(), 
+        	this->getData2()
+        };
         MidiUSB.sendMIDI(tx);
     }
     return true;
