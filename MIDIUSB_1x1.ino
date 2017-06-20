@@ -1,6 +1,9 @@
 /*
  * MIDIUSB 1x1 interface, works with iPad.
  * 
+ *   Currently tested boards are Arduino Micro, Leonardo.
+ *   Not tested on Due but should work as well.
+ * 
  *   Important Note: needs D_CONFIG macro in USBCore.h to be patched to change USB_CONFIG_POWER_MA(500) 
  *     with a lower value (i.e 20) in order to work with iPad, as it is bus powered by the tablet.
  * 
@@ -17,7 +20,6 @@
  * THE SOFTWARE.
  */
 
-#include "TimerOne.h"
 #include "MIDIUSB.h"
 #include "MIDI.h"
 #include "MidiBridge.h"
@@ -37,7 +39,7 @@ MIDIBRIDGE_CREATE_INSTANCE(HardwareSerial, Serial1,     midiA);
 //------------------------------------------------------------------------------
 static bool timer_elapsed = false;
 //------------------------------------------------------------------------------
-void timer1_callback()
+static void idle_timer_callback()
 {
   timer_elapsed = true;
 }
@@ -51,11 +53,7 @@ void setup()
   Leds::AliveSignal(); // briefly blink leds as an alive signal
   
   midiA.begin(MIDI_CHANNEL_OMNI);
-  
-  // Set timer to save even more power after a period of inactivity
-  Timer1.initialize(500000); // initialize timer1, and set a period in us
-  Timer1.attachInterrupt(timer1_callback);
-
+  Power::SetupIdleTimer(idle_timer_callback);  
   Power::PowerSaveMode(); // save extra millamps by disabling what we do not use
 }
 //------------------------------------------------------------------------------
@@ -85,7 +83,7 @@ void loop()
   if(sent || recv)
   {
       timer_elapsed = sent = recv = false;
-      Timer1.restart();
+      Power::RestartIdleTimer();
   }
   else if(timer_elapsed)
   {

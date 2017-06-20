@@ -35,7 +35,13 @@
 #endif  
 
 const byte  led1 = LED;
+#if defined(ARDUINO_SAM_DUE)
+// revisit these later as they won't be supported many boards
+#define TXLED1
+#define TXLED0
+#else
 const byte  led2 = TXLED1;
+#endif
 
 class Leds
 {
@@ -44,8 +50,11 @@ class Leds
   static void Setup()
   {
     pinMode(led1, OUTPUT);
+
+#if !defined(ARDUINO_SAM_DUE)
     pinMode(led2, OUTPUT);
-  }
+#endif
+}
   
   static void Blink(byte led, int del=500)
   {
