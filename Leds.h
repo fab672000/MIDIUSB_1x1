@@ -36,7 +36,7 @@
 
 const byte  led1 = LED;
 #if defined(ARDUINO_SAM_DUE)
-// revisit these later as they won't be supported many boards
+// revisit these later as they won't be supported for many boards
 #define TXLED1
 #define TXLED0
 #else
