@@ -181,7 +181,7 @@ bool MidiBridge<SerialPort, Settings>::SendToUSB()
         midiEventPacket_t tx= 
         {
         	byte(msgType>>4), 
-        	byte(msgType | ((this->getChannel()-1) & 0x0f), // getChannel() returns values from 1 to 16
+        	byte(msgType | ((this->getChannel()-1) & 0x0f)), /* getChannel() returns values from 1 to 16 */
         	this->getData1(), 
         	this->getData2()
         };
